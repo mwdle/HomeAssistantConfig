@@ -39,12 +39,12 @@ services:
     image: ghcr.io/blakeblackshear/frigate:stable
     container_name: Frigate
     restart: unless-stopped
-    privileged: true
+    privileged: true # Must be privileged to enable hardward acceleration. This allows access intel_gpu_top command for gpu stats .
     shm_size: "64mb" # update for your cameras based on calculation from installation guide
     devices:
       - /dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
     ports:
-      - 8555:8555
+      - 8555:8555 # WebRTC
     hostname: frigate
     networks:
       - Frigate

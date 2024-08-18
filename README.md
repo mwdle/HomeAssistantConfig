@@ -1,6 +1,6 @@
 # Multi-Service Docker Compose Configuration for Home Assistant
 
-A sample Docker Compose configuration for Home Assistant, MQTT, Frigate, Music Assistant, and [RouterRebooter](https://github.com/mwdle/RouterRebooter).  
+A sample Docker Compose configuration for the smart home services I use: Home Assistant, MQTT, Frigate, Music Assistant, and [RouterRebooter](https://github.com/mwdle/RouterRebooter).  
 
 ## Table of Contents  
 
@@ -17,20 +17,54 @@ A sample Docker Compose configuration for Home Assistant, MQTT, Frigate, Music A
     git clone https://github.com/mwdle/HomeAssistantConfig.git
     ```  
 
-2. Change the ```.env``` file properties:  
+2. Create a file called ```.env``` in the same directory as ```docker-compose.yml``` containing the following properties:  
 
     ```properties
     DOCKER_VOLUMES=<PATH_TO_DOCKER_VOLUMES> # A folder on your system to store bind mounts for Docker containers.
+    RTSP_USER=<YOUR_RTSP_USER> # For Frigate
+    RTSP_PASSWORD=<YOUR_RTSP_PASSWORD> # For Frigate
+    MQTT_USER=<YOUR_MQTT_USER> # For Frigate
+    MQTT_PASSWORD=<YOUR_MQTT_PASSWORD> # For Frigate
+    MUSIC_VOLUME=<YOUR_MUSIC_LIBRARY_FOLDER> # A folder containing your local music library for Music Assistant.
     ```  
 
 3. Open a terminal in the directory containing the docker-compose file.  
-4. Start the container:  
+4. Create docker networks for the containers
+
+    ```shell
+    docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eno1 AAA_LAN # Ensure the gateway and subnet match your LAN network. YOUR LAN SHOULD BE TRUSTED. AAA in the name ensures Docker uses this network as the primary interface for all connected containers.
+    docker network create MQTT
+    docker network create Frigate
+    docker network create HomeAssistant
+    docker network create MusicAssistant
+    docker network create RouterRebooter
+    ```  
+
+    The networks are configured in docker-compose.yml such that:  
+    * Containers in the same network are accessible from each other by their container names.  
+    * Music Assistant is in a macvlan, making it appear to be a physical interface on the host LAN (for mDNS / device discovery). Ensure you reserved the IP address set in docker-compose.yml for Music Assistant in your router.  
+    * Home Assistant is in a macvlan, making it appear to be a physical interface on the host LAN (for mDNS / device discovery). Ensure you reserved the IP address set in docker-compose.yml for Home Assistant in your router.  
+    * Frigate's Port 8555 (for WebRTC) is bound to port 8555 on the host.
+    * Frigate and MQTT can directly communicate.  
+    * Home Assistant and MQTT can directly communicate.  
+    * Home Assistant and Frigate can directly communicate.  
+    * Home Assistant and RouterRebooter can directly communicate.  
+    * Home Assistant and Music Assistant can directly communicate.  
+
+5. Start the containers:  
 
     ```shell
     docker compose up -d
     ```  
 
-Your containers ...
+6. To update images and containers (RouterRebooter must be built using the [RouterRebooter repository](https://github.com/mwdle/RouterRebooter)):  
+
+    ```shell
+    docker compose pull -ignore-pull-failures # RouterRebooter must be built using a dockerfile from the RouterRebooter repository, so trying to pull it will fail.
+    docker compose up -d
+    ```  
+
+Your containers should now be up and running! Attach your reverse proxy container to the previously created Docker Networks and configure it accordingly.  
 
 ## License  
 
