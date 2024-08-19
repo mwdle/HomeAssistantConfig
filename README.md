@@ -17,10 +17,31 @@ A sample Docker Compose configuration for the smart home services I use: Home As
     git clone https://github.com/mwdle/HomeAssistantConfig.git
     ```  
 
-2. Create a file called ```.env``` in the same directory as ```docker-compose.yml``` containing the following properties:  
+2. Create a folder on your system for Docker bind mounts / storing container files. The folder should have the following structure:  
+
+    ```shell
+    docker_volumes/
+    ├── Frigate/
+    │   ├── config/
+    │   └── storage/
+    ├── HomeAssistant/
+    │   ├── config/
+    │   └── .ssh/
+    ├── MQTT/
+    │   ├── config/
+    │   ├── data/
+    │   └── log/
+    ├── MusicAssistant/
+    │   └── data/
+    ├── RouterRebooter/
+    │   ├── data/
+    │   └── secrets/
+    ```  
+
+3. Create a file called ```.env``` in the same directory as ```docker-compose.yml``` containing the following properties:  
 
     ```properties
-    DOCKER_VOLUMES=<PATH_TO_DOCKER_VOLUMES> # A folder on your system to store bind mounts for Docker containers.
+    DOCKER_VOLUMES=<PATH_TO_DOCKER_VOLUMES_FOLDER> # The folder created in the previous step.
     RTSP_USER=<YOUR_RTSP_USER> # For Frigate
     RTSP_PASSWORD=<YOUR_RTSP_PASSWORD> # For Frigate
     MQTT_USER=<YOUR_MQTT_USER> # For Frigate
@@ -28,8 +49,8 @@ A sample Docker Compose configuration for the smart home services I use: Home As
     MUSIC_VOLUME=<YOUR_MUSIC_LIBRARY_FOLDER> # A folder containing your local music library for Music Assistant.
     ```  
 
-3. Open a terminal in the directory containing the docker-compose file.  
-4. Create docker networks for the containers
+4. Open a terminal in the directory containing the docker-compose file.  
+5. Create docker networks for the containers
 
     ```shell
     docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eno1 AAA_LAN # Ensure the gateway and subnet match your LAN network. YOUR LAN SHOULD BE TRUSTED. AAA in the name ensures Docker uses this network as the primary interface for all connected containers.
@@ -51,16 +72,16 @@ A sample Docker Compose configuration for the smart home services I use: Home As
     * Home Assistant and RouterRebooter can directly communicate.  
     * Home Assistant and Music Assistant can directly communicate.  
 
-5. Start the containers:  
+6. Start the containers:  
 
     ```shell
     docker compose up -d
     ```  
 
-6. To update images and containers (RouterRebooter must be built using the [RouterRebooter repository](https://github.com/mwdle/RouterRebooter)):  
+7. To update images and containers (RouterRebooter must be built using the [RouterRebooter repository](https://github.com/mwdle/RouterRebooter)):  
 
     ```shell
-    docker compose pull -ignore-pull-failures # RouterRebooter must be built using a dockerfile from the RouterRebooter repository, so trying to pull it will fail.
+    docker compose pull --ignore-pull-failures # RouterRebooter must be built using a dockerfile from the RouterRebooter repository, so trying to pull it will fail.
     docker compose up -d
     ```  
 
