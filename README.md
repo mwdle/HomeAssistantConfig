@@ -1,6 +1,6 @@
 # Multi-Service Docker Compose Configuration for Home Assistant
 
-A sample Docker Compose configuration for the smart home services I use: Home Assistant, MQTT, Frigate, Music Assistant, and [RouterRebooter](https://github.com/mwdle/RouterRebooter).  
+A sample Docker Compose configuration for the smart home services I use: [Home Assistant](https://www.home-assistant.io/), [Mosquitto MQTT](https://mosquitto.org/), [Frigate NVR](https://frigate.video/), [Music Assistant](https://music-assistant.io/), and [RouterRebooter](https://github.com/mwdle/RouterRebooter).  
 
 ## Table of Contents  
 
