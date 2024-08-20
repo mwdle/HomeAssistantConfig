@@ -38,7 +38,7 @@ A sample Docker Compose configuration for the smart home services I use: [Home A
     │   └── secrets/
     ```  
 
-3. Create a file called ```.env``` in the same directory as ```docker-compose.yml``` containing the following properties:  
+3. Create a file called `.env` in the same directory as `docker-compose.yml` containing the following properties:  
 
     ```properties
     DOCKER_VOLUMES=<PATH_TO_DOCKER_VOLUMES_FOLDER> # The folder created in the previous step.
