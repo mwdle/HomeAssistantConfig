@@ -69,11 +69,9 @@ services:
     container_name: MusicAssistant
     image: ghcr.io/music-assistant/server:latest
     restart: unless-stopped
-    mac_address: 02:42:c0:a8:00:6c
     hostname: musicassistant
     networks:
       AAA_LAN:
-        ipv4_address: 192.168.0.108
       MusicAssistant:
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -84,11 +82,9 @@ services:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
     restart: unless-stopped
-    mac_address: 02:42:c0:a8:00:65
     hostname: homeassistant
     networks:
       AAA_LAN:
-        ipv4_address: 192.168.0.101
       HomeAssistant:
       MQTT:
       RouterRebooter:
