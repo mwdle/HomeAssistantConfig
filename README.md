@@ -54,7 +54,6 @@ A sample Docker Compose configuration for the smart home services I use: [Home A
 
     ```shell
     docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eno1 AAA_LAN # Ensure the gateway and subnet match your LAN network. YOUR LAN SHOULD BE TRUSTED. AAA in the name ensures Docker uses this network as the primary interface for all connected containers.
-    docker network create MQTT
     docker network create Frigate
     docker network create HomeAssistant
     docker network create MusicAssistant
@@ -68,9 +67,9 @@ A sample Docker Compose configuration for the smart home services I use: [Home A
     * Frigate's Port 8555 (for WebRTC) is bound to port 8555 on the host.
     * Frigate and MQTT can directly communicate.  
     * Home Assistant and MQTT can directly communicate.  
-    * Home Assistant and Frigate can directly communicate.  
     * Home Assistant and RouterRebooter can directly communicate.  
-    * Home Assistant and Music Assistant can directly communicate.  
+    * Home Assistant and Music Assistant can communicate so long as you add your Reverse Proxy for MA to the Home Assistant Docker network using a *Docker Network Alias* to connect with.  
+    * Home Assistant and Frigate can communicate so long as you add your Reverse Proxy for Frigate to the Home Assistant Docker network using a *Docker Network Alias* to connect with.  
 
 6. Start the containers:  
 
@@ -81,7 +80,7 @@ A sample Docker Compose configuration for the smart home services I use: [Home A
 7. To update images and containers (RouterRebooter must be built using the [RouterRebooter repository](https://github.com/mwdle/RouterRebooter)):  
 
     ```shell
-    docker compose pull --ignore-pull-failures # RouterRebooter must be built using a dockerfile from the RouterRebooter repository, so trying to pull it will fail.
+    docker compose pull --ignore-pull-failures # RouterRebooter must be built using Dockerfile from the RouterRebooter repository, so trying to pull it will fail.
     docker compose up -d
     ```  
 
