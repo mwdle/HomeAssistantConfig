@@ -91,9 +91,6 @@ services:
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
       - ${DOCKER_VOLUMES}/HomeAssistant/.ssh:/root/.ssh
       - /etc/localtime:/etc/localtime:ro
-    environment:
-      ROUTER_PASSWORD: ${ROUTER_PASSWORD}
-      EXTENDER_PASSWORD: ${EXTENDER_PASSWORD}
     depends_on:
       - RouterRebooter
       - MQTT
