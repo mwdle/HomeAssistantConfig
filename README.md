@@ -62,8 +62,8 @@ A sample Docker Compose configuration for the smart home services I use: [Home A
 
     The networks are configured in docker-compose.yml such that:  
     * Containers in the same network are accessible from each other by their container names.  
-    * Music Assistant is in a macvlan, making it appear to be a physical interface on the host LAN (for mDNS / device discovery). Make sure to reserve the IP address listed in docker-compose.yml for Music Assistant on your router's web interface.  
-    * Home Assistant is in a macvlan, making it appear to be a physical interface on the host LAN (for mDNS / device discovery). Make sure to reserve the IP address listed in docker-compose.yml for Home Assistant on your router's web interface.  
+    * Music Assistant is in a macvlan, making it appear to be a physical interface on the host's LAN (allowing mDNS / device discovery). Make sure to reserve the IP address listed for Home Assistant in docker-compose.yml on your router's web interface.  
+    * Home Assistant is in a macvlan, making it appear to be a physical interface on the host's LAN (allowing mDNS / device discovery). Make sure to reserve the IP address listed for Home Assistant in docker-compose.yml on your router's web interface.  
     * Frigate's Port 8555 (for WebRTC) is bound to port 8555 on the host.
     * Frigate and MQTT can directly communicate.  
     * Home Assistant and MQTT can directly communicate.  
