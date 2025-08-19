@@ -1,4 +1,4 @@
-services:
+services: # TODO: Include resource limits for all containers in this stack
   RouterRebooter:
     image: mwdle/router_rebooter:latest
     container_name: RouterRebooter
@@ -19,8 +19,8 @@ services:
       - TZ=America/Denver
     deploy:
       resources:
-        limits: 
-          cpus: '0.50'
+        limits:
+          cpus: "0.50"
           memory: 250M
 
   MQTT:
@@ -40,8 +40,8 @@ services:
     image: ghcr.io/blakeblackshear/frigate:stable
     container_name: Frigate
     restart: unless-stopped
-    privileged: true # Must be privileged to enable hardward acceleration. This allows access intel_gpu_top command for gpu stats .
-    shm_size: "64mb" # update for your cameras based on calculation from installation guide
+    privileged: true # Must be privileged to enable hardward acceleration. This allows access intel_gpu_top command for gpu stats.
+    shm_size: "128mb" # https://docs.frigate.video/frigate/installation/#calculating-required-shm-size
     devices:
       - /dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
     ports:
@@ -76,8 +76,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/MusicAssistant/data:/data
-      - ${MUSIC_VOLUME}:/media
-  
+      - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
+
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
@@ -88,9 +88,9 @@ services:
       HomeAssistant:
       RouterRebooter:
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
       - ${DOCKER_VOLUMES}/HomeAssistant/.ssh:/root/.ssh
-      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - RouterRebooter
       - MQTT
