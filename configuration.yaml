@@ -1,0 +1,152 @@
+logbook:
+  exclude:
+    entity_globs:
+      - sensor.*_last_seen
+      - sensor.*_esphome_version
+      - media_player.michael_s_speakers
+      - media_player.michael_s_nest_mini
+      - media_player.audio*
+      - sensor.*_color_loop_hue
+      - button.*_color_loop_hue
+      - automation.synchronize_color_loop_effect_across_lights
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+script: !include scripts.yaml
+automation: !include automations.yaml
+
+media_source:
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/16
+    - 192.168.0.0/24
+
+# Make sure Pyscript is installed via HACS!
+pyscript: !include pyscript/config.yaml
+
+google_assistant:
+  project_id: hass-66333
+  service_account: !include SERVICE_ACCOUNT.JSON
+  report_state: true
+  expose_by_default: false
+  entity_config:
+    switch.speakers_relay:
+      name: Speakers
+      expose: true
+      room: My Room
+    switch.laptop_charger_relay:
+      name: Laptop Charger
+      expose: true
+      room: My Room
+    script.extender_rebooter:
+      name: Extender Rebooter
+      expose: true
+    script.router_rebooter:
+      name: Router Rebooter
+      expose: true
+    script.multicolor_strobe:
+      name: Multicolor Strobe
+      expose: true
+    script.color_loop:
+      name: Color Loop
+      expose: true
+    light.bed_lights:
+      name: Bed Lights
+      expose: true
+      room: My Room
+    light.shelf_lights:
+      name: Shelf Lights
+      expose: true
+      room: My Room
+    script.sync_audio_group_volume:
+      name: Sync Audio Group Volume
+      expose: true
+    script.reboot_google_home_devices:
+      name: Reboot Google Home Devices
+      expose: true
+    script.reboot_esphome_devices:
+      name: Reboot ESPHome Devices
+      expose: true
+    switch.op7pro_detection_and_recording:
+      name: Camera Recording
+      expose: true
+    script.turn_off_light_effects_and_turn_lights_red:
+      name: Turn Lights Red
+      expose: true
+    script.play_music_on_audio_group:
+      name: Play Music On Audio Group
+      expose: true
+    script.shuffle_alternative_playlist_on_audio_group:
+      name: Shuffle Alternative Playlist On Audio
+      expose: true
+    script.shuffle_buffer_playlist_on_audio_group:
+      name: Shuffle Buffer Playlist On Audio
+      expose: true
+    script.shuffle_hip_hop_playlist_on_audio_group:
+      name: Shuffle Hip Hop Playlist On Audio
+      expose: true
+    script.shuffle_jazz_playlist_on_audio_group:
+      name: Shuffle Jazz Playlist On Audio
+      expose: true
+    script.shuffle_latin_playlist_on_audio_group:
+      name: Shuffle Latin Playlist On Audio
+      expose: true
+    script.shuffle_reggae_playlist_on_audio_group:
+      name: Shuffle Reggae Playlist On Audio
+      expose: true
+    script.shuffle_slightly_sublime_playlist_on_audio_group:
+      name: Shuffle Slightly Sublime Playlist On Audio
+      expose: true
+    script.shuffle_music_on_audio_group:
+      name: Shuffle Music On Audio
+      expose: true
+
+template:
+  - button: # See `pyscript/apps/router_rebooter`
+      - name: "Reboot Router"
+        icon: "mdi:restart"
+        press:
+          - action: pyscript.reboot_router
+      - name: "Reboot Extender"
+        icon: "mdi:restart"
+        press:
+          - action: pyscript.reboot_extender
+  # EMR (ESP8266 Music Remote) Template Text Sensor, See
+  #  - https://github.com/mwdle/ESPHomeConfig/blob/main/config/esp8266_music_remote.h
+  #  - https://github.com/mwdle/ESPHomeConfig/blob/main/config/esp8266_music_remote.yaml
+  - trigger:
+      - trigger: time_pattern
+        hours: 0 # Update the playlist list once daily
+      - platform: state
+        entity_id: input_button.manually_refresh_music_assistant_library # Trigger: Manual update using the input button
+    action:
+      - action: music_assistant.get_library
+        data:
+          media_type: playlist
+          config_entry_id: "{{ config_entry_id('media_player.audio') }}" # Run the action on the appropriate Music Assistant Integration Instance
+        response_variable: playlists_data
+    sensor:
+      - unique_id: ma_library
+        name: ma_library
+        state: "{{ now().isoformat() }}"
+        attributes:
+          playlist_count: "{{ playlists_data['items'] | length }}"
+          playlists: >
+            {% if playlists_data is defined and playlists_data['items'] %}
+              {% set ns = namespace(playlist_names="") %}
+              {% for playlist in playlists_data['items'] %}
+                {% set ns.playlist_names = ns.playlist_names ~ playlist['name'] ~ ',' %}
+              {% endfor %}
+              {% if ns.playlist_names.endswith(',') %}
+                {% set ns.playlist_names = ns.playlist_names[:-1] %}
+              {% endif %}
+              {{ ns.playlist_names }}
+            {% else %} No playlists available
+            {% endif %}

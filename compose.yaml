@@ -1,28 +1,4 @@
 services: # TODO: Include resource limits for all containers in this stack
-  RouterRebooter:
-    image: mwdle/router_rebooter:latest
-    container_name: RouterRebooter
-    restart: unless-stopped
-    hostname: routerrebooter
-    networks:
-      - RouterRebooter
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${DOCKER_VOLUMES}/HomeAssistant/.ssh/id_rsa.pub:/root/.ssh/authorized_keys:ro
-      - ${DOCKER_VOLUMES}/RouterRebooter/secrets/router_pass:/RouterRebooter/secrets/router_pass:ro
-      - ${DOCKER_VOLUMES}/RouterRebooter/secrets/extender_pass:/RouterRebooter/secrets/extender_pass:ro
-      - ${DOCKER_VOLUMES}/RouterRebooter/data:/RouterRebooter/data
-    environment:
-      - SCREEN_WIDTH=1920
-      - SCREEN_HEIGHT=1080
-      - SCREEN_DEPTH=24
-      - TZ=America/Denver
-    deploy:
-      resources:
-        limits:
-          cpus: "0.50"
-          memory: 250M
-
   MQTT:
     image: eclipse-mosquitto
     container_name: MQTT
@@ -78,6 +54,22 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${DOCKER_VOLUMES}/MusicAssistant/data:/data
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
+  Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
+    image: selenium/standalone-chrome:latest
+    container_name: Chrome
+    restart: unless-stopped
+    hostname: chrome
+    shm_size: 2g # Required unless using chrome option `--disable-dev-shm-usage`
+    networks:
+      - Chrome
+    environment:
+      - SE_START_VNC=false
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2GB
+
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
@@ -86,13 +78,18 @@ services: # TODO: Include resource limits for all containers in this stack
     networks:
       AAA_LAN:
       HomeAssistant:
-      RouterRebooter:
+      Chrome: # Used by pyscript `router_rebooter` module for Selenium access within HA
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
-      - ${DOCKER_VOLUMES}/HomeAssistant/.ssh:/root/.ssh
+      - ./configuration.yaml:/config/configuration.yaml:ro # Mount the configuration.yaml from this repository into the container
+      - ./pyscript:/config/pyscript:ro # Mount pyscript apps folder from this repository into the container
+      - ./pyscript_modules:/config/pyscript_modules:ro # Mount pyscript modules folder from this repository into the container
+    # Custom environment variables used within Pyscript for `router_rebooter` app:
+    environment:
+      - ROUTER_PASSWORD=${ROUTER_PASSWORD}
+      - EXTENDER_PASSWORD=${EXTENDER_PASSWORD}
     depends_on:
-      - RouterRebooter
       - MQTT
       - Frigate
       - MusicAssistant
@@ -104,8 +101,8 @@ networks:
   HomeAssistant:
     name: HomeAssistant
     external: true
-  RouterRebooter:
-    name: RouterRebooter
+  Chrome:
+    name: Chrome
     external: true
   Frigate:
     name: Frigate
