@@ -45,10 +45,10 @@ google_assistant:
       name: Laptop Charger
       expose: true
       room: My Room
-    script.extender_rebooter:
+    script.reboot_extender:
       name: Extender Rebooter
       expose: true
-    script.router_rebooter:
+    script.reboot_router:
       name: Router Rebooter
       expose: true
     script.multicolor_strobe:
