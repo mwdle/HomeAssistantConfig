@@ -48,7 +48,7 @@ def find_extender_ip():
     return None
 
 
-# Compatible with Arris SURFboard G54 router, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages.
+# Compatible with Arris SURFboard G54 router, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages using developer tools.
 def reboot_router():
     """
     Performs the router reboot using selenium.
@@ -83,7 +83,7 @@ def reboot_router():
             driver.quit()
 
 
-# Compatible with TP-Link RE650 extender, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages.
+# Compatible with TP-Link RE650 extender, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages using developer tools.
 def reboot_extender():
     """
     Performs the extender reboot using selenium.
