@@ -36,7 +36,7 @@ def create_webdriver():
 
 
 def find_extender_ip():
-    """Scans the local network to find the TP-Link extender."""
+    """Scans the local network to find the TP-Link extender web interface."""
     for i in range(2, 255):
         address = f"http://192.168.0.{i}"
         try:
