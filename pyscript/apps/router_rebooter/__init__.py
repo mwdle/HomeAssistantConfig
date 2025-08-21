@@ -8,36 +8,40 @@ if "/config/pyscript_modules" not in sys.path:
 
 import router_rebooter_module # Defined in `pyscript_modules`
 
-state.set("pyscript.router_rebooter_status", 
-          "Ready", 
-          new_attributes={
-              "friendly_name": "Router Rebooter Status",
-              "icon": "mdi:restart"
-          })
+# Make Extender Rebooter status persistent across HA restarts
+# Initializes `pyscript.extender_rebooter_status` state variable (entity_id) if it doesn't exist
+state.persist("pyscript.extender_rebooter_status", "Ready", {
+    "friendly_name": "Extender Rebooter Status",
+    "icon": "mdi:restart"
+})
 
-state.set("pyscript.extender_rebooter_status", 
-          "Ready", 
-          new_attributes={
-              "friendly_name": "Extender Rebooter Status",
-              "icon": "mdi:restart"
-          })
+# Make Router Rebooter status persistent across HA restarts
+# Initializes `pyscript.router_rebooter_status` state variable (entity_id) if it doesn't exist
+state.persist("pyscript.router_rebooter_status", "Ready", {
+    "friendly_name": "Router Rebooter Status",
+    "icon": "mdi:restart"
+})
 
 @service
 def reboot_router():
     """Reboots the router."""
-    pyscript.router_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Triggering reboot"
+    pyscript.router_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] Executing Reboot Command..."
+    # Run blocking Selenium code from module with `task.executor()`
     success, message = task.executor(router_rebooter_module.reboot_router)
     if success:
-        pyscript.router_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Success!"
+        pyscript.router_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] Success!"
     else:
-        pyscript.router_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {message[:50]}..."
+        pyscript.router_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] ERROR | Check Logs!"
+        log.error(f"[Router Rebooter]: {message}")
 
 @service
 def reboot_extender():
     """Reboots the extender."""
-    pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Triggering reboot"
+    pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] Executing Reboot Command..."
+    # Run blocking Selenium code from module with `task.executor()`
     success, message = task.executor(router_rebooter_module.reboot_extender)
     if success:
-        pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Success!"
+        pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] Success!"
     else:
-        pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: {message[:50]}..."
+        pyscript.extender_rebooter_status = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] ERROR | Check Logs!"
+        log.error(f"[Extender Rebooter]: {message}")
