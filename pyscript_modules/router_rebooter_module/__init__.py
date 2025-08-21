@@ -1,6 +1,6 @@
 """
-Native Python module for Selenium operations.
-This runs outside the Pyscript interpreter to avoid Selenium import issues, but remains accessible for import within Pyscripts for interacting with HA
+Router Rebooter native Python module for Selenium operations.
+This runs outside the Pyscript interpreter to avoid Selenium import issues and event loop blocking, but remains accessible for import within Pyscripts for interacting with HA
 See:
  - https://hacs-pyscript.readthedocs.io/en/latest/reference.html#avoiding-event-loop-i-o
  - https://hacs-pyscript.readthedocs.io/en/latest/reference.html#importing
@@ -51,7 +51,7 @@ def find_extender_ip():
 # Compatible with Arris SURFboard G54 router, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages using developer tools.
 def reboot_router():
     """
-    Performs the router reboot using selenium.
+    Performs the router reboot using Selenium.
     Returns a tuple: (success: bool, message: str)
     """
     # Get router password from environment -- see `compose.yaml`
@@ -86,7 +86,7 @@ def reboot_router():
 # Compatible with TP-Link RE650 extender, but can be easily adapted to work for the web interface on your router if you are familiar with inspecting webpages using developer tools.
 def reboot_extender():
     """
-    Performs the extender reboot using selenium.
+    Performs the extender reboot using Selenium.
     Returns a tuple: (success: bool, message: str)
     """
     # Get extender password from environment -- see `compose.yaml`
