@@ -1,3 +1,4 @@
+name: HomeAssistant
 services: # TODO: Include resource limits for all containers in this stack
   MQTT:
     image: eclipse-mosquitto
