@@ -72,6 +72,20 @@ services: # TODO: Include resource limits for all containers in this stack
           cpus: "1"
           memory: 2GB
 
+  Glances:
+    image: docker.io/nicolargo/glances
+    container_name: Glances
+    restart: unless-stopped
+    pid: host
+    hostname: glances
+    networks:
+      Glances:
+    environment:
+      - GLANCES_OPT=-w # Enable webserver mode (which is required to use the Home Assistant integration)
+      - TZ=America/Denver
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
+
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
@@ -81,7 +95,8 @@ services: # TODO: Include resource limits for all containers in this stack
       AAA_LAN:
         mac_address: 0A:00:00:00:00:02 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
       HomeAssistant:
-      Chrome: # Used by pyscript `router_rebooter` module for Selenium access within HA
+      Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
+      Glances:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
@@ -112,4 +127,7 @@ networks:
     external: true
   MusicAssistant:
     name: MusicAssistant
+    external: true
+  Glances:
+    name: Glances
     external: true
