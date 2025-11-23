@@ -86,6 +86,18 @@ services: # TODO: Include resource limits for all containers in this stack
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
+  MatterServer:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    container_name: MatterServer
+    restart: unless-stopped
+    hostname: matterserver
+    networks:
+      AAA_LAN:
+        mac_address: 0A:00:00:00:00:03 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
+      MatterServer:
+    volumes:
+      - ${DOCKER_VOLUMES}/MatterServer/data:/data/
+
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
@@ -97,6 +109,7 @@ services: # TODO: Include resource limits for all containers in this stack
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
+      MatterServer:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
@@ -130,4 +143,7 @@ networks:
     external: true
   Glances:
     name: Glances
+    external: true
+  MatterServer:
+    name: MatterServer
     external: true
