@@ -98,6 +98,8 @@ services: # TODO: Include resource limits for all containers in this stack
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
+      # Bind to Macvlan interface (eth1) so mDNS broadcasts on physical LAN instead of Docker bridge
+      - HAMH_MDNS_NETWORK_INTERFACE=eth1
     volumes:
       - ${DOCKER_VOLUMES}/MatterHub:/data
 
