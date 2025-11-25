@@ -91,12 +91,9 @@ services: # TODO: Include resource limits for all containers in this stack
     container_name: MatterHub
     restart: unless-stopped
     hostname: matterhub
-    networks:
-      AAA_LAN:
-        mac_address: 0A:00:00:00:00:03 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
-      MatterHub:
+    network_mode: host
     environment:
-      - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
+      - HAMH_HOME_ASSISTANT_URL=http://localhost:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
     volumes:
       - ${DOCKER_VOLUMES}/MatterHub:/data
@@ -106,6 +103,8 @@ services: # TODO: Include resource limits for all containers in this stack
     container_name: HomeAssistant
     restart: unless-stopped
     hostname: homeassistant
+    ports: # Expose 8123 on the host's local interface to allow the MatterHub container to connect to it (required because MatterHub uses host networking mode, and HomeAssistant is in a MacVLAN network which by definition cannot communicate directly with the host)
+      - "127.0.0.1:8123:8123"
     networks:
       AAA_LAN:
         mac_address: 0A:00:00:00:00:02 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
