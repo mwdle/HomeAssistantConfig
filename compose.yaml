@@ -93,24 +93,26 @@ services: # TODO: Include resource limits for all containers in this stack
     hostname: matterhub
     network_mode: host
     environment:
-      - HAMH_HOME_ASSISTANT_URL=http://localhost:8123/
+      - HAMH_HOME_ASSISTANT_URL=http://172.31.255.254:8123/ # Connect to HomeAssistant via its static IP in the MatterHub Docker network defined at the bottom of this file. I was unable to get Matter Hub to work properly on a MacVLAN network -- host networking is required for this container which complicates communication with HomeAssistant container which IS on a MacVLAN network.
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
     volumes:
       - ${DOCKER_VOLUMES}/MatterHub:/data
+    depends_on:
+      - HomeAssistant
 
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: HomeAssistant
     restart: unless-stopped
     hostname: homeassistant
-    ports: # Expose 8123 on the host's local interface to allow the MatterHub container to connect to it (required because MatterHub uses host networking mode, and HomeAssistant is in a MacVLAN network which by definition cannot communicate directly with the host)
-      - "127.0.0.1:8123:8123"
     networks:
       AAA_LAN:
         mac_address: 0A:00:00:00:00:02 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
+      MatterHub:
+        ipv4_address: 172.31.255.254 # MatterHub communicates with HomeAssistant via this static IP in the network defined at the bottom -- this is the only way I managed to allow Matter Hub container in host networking mode to communicate with HomeAssistant which is on MacVLAN network.
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
@@ -145,3 +147,8 @@ networks:
   Glances:
     name: Glances
     external: true
+  MatterHub: # Allows Matter Hub container running in host networking mode, to communicate with Home Assistant container with primary gateway on MacVLAN network.
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.255.252/30
