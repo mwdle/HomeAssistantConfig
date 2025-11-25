@@ -111,7 +111,6 @@ services: # TODO: Include resource limits for all containers in this stack
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
-      MatterHub:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
@@ -145,7 +144,4 @@ networks:
     external: true
   Glances:
     name: Glances
-    external: true
-  MatterHub:
-    name: MatterHub
     external: true
