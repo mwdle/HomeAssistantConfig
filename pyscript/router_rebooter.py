@@ -24,11 +24,11 @@ state.persist("pyscript.router_rebooter_status", "Ready", {
 @service
 def reboot_router():
     """Reboots the router."""
-    pyscript.router_rebooter_status = "Initiating Reboot..."
+    pyscript.router_rebooter_status = "Initiating Restart..."
     # Run blocking Selenium code from module with `task.executor()`
     success, message = task.executor(router_rebooter_module.reboot_router)
     if success:
-        pyscript.router_rebooter_status = "Reboot Triggered!"
+        pyscript.router_rebooter_status = "Restart Triggered!"
     else:
         pyscript.router_rebooter_status = "ERROR | Check Logs!"
         log.error(f"[Router Rebooter]: {message}")
@@ -40,7 +40,7 @@ def reboot_extender():
     # Run blocking Selenium code from module with `task.executor()`
     success, message = task.executor(router_rebooter_module.reboot_extender)
     if success:
-        pyscript.extender_rebooter_status = "Reboot Triggered!"
+        pyscript.extender_rebooter_status = "Restart Triggered!"
     else:
         pyscript.extender_rebooter_status = "ERROR | Check Logs!"
         log.error(f"[Extender Rebooter]: {message}")
