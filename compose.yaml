@@ -112,7 +112,7 @@ services: # TODO: Include resource limits for all containers in this stack
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
       MatterHub:
-        ipv4_address: 172.31.255.254 # MatterHub communicates with HomeAssistant via this static IP in the network defined at the bottom -- this is the only way I managed to allow Matter Hub container in host networking mode to communicate with HomeAssistant which is on MacVLAN network.
+        ipv4_address: 172.31.255.254 # MatterHub communicates with HomeAssistant via this static IP in the Docker network defined at the bottom -- this is the only way I managed to allow Matter Hub container in host networking mode to communicate with HomeAssistant which is on MacVLAN network.
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
