@@ -57,11 +57,11 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
-    image: selenium/standalone-chrome:latest
+    image: selenium/standalone-chromium:latest
     container_name: Chrome
     restart: unless-stopped
     hostname: chrome
-    shm_size: 2g # Required unless using chrome option `--disable-dev-shm-usage`
+    shm_size: 2g # Required unless using option `--disable-dev-shm-usage`
     networks:
       - Chrome
     environment:
