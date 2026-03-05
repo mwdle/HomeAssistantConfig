@@ -149,7 +149,7 @@ networks:
   Glances:
     name: Glances
     external: true
-  MatterHub: # Allows Matter Hub container running in host networking mode, to communicate with Home Assistant container whose primary gateway is a MacVLAN network.
+  MatterHub: # Allows Matter Hub container running in host networking mode, to communicate with Home Assistant container whose primary gateway is a MacVLAN network. See services.MatterHub.environment in this file.
     driver: bridge
     ipam:
       config:
