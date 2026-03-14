@@ -29,7 +29,7 @@ services: # TODO: Include resource limits for all containers in this stack
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/Frigate/config:/config
-      - ${DOCKER_VOLUMES}/Frigate/storage:/media/frigate
+      - frigate_media:/media/frigate
       - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
         target: /tmp/cache
         tmpfs:
@@ -132,25 +132,22 @@ services: # TODO: Include resource limits for all containers in this stack
 
 networks:
   AAA_LAN:
-    name: AAA_LAN
     external: true
   HomeAssistant:
-    name: HomeAssistant
     external: true
   Chrome:
-    name: Chrome
     external: true
   Frigate:
-    name: Frigate
     external: true
   MusicAssistant:
-    name: MusicAssistant
     external: true
   Glances:
-    name: Glances
     external: true
   MatterHub: # Allows Matter Hub container running in host networking mode, to communicate with Home Assistant container whose primary gateway is a MacVLAN network. See services.MatterHub.environment in this file.
     driver: bridge
     ipam:
       config:
         - subnet: 172.31.255.252/30
+
+volumes:
+  frigate_media:
