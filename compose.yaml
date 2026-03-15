@@ -27,7 +27,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - Frigate
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${DOCKER_VOLUMES}/Frigate/config:/config
+      - ${DOCKER_VOLUMES}/Frigate:/config
       - frigate_media:/media/frigate
       - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
         target: /tmp/cache
@@ -52,7 +52,7 @@ services: # TODO: Include resource limits for all containers in this stack
       MusicAssistant:
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${DOCKER_VOLUMES}/MusicAssistant/data:/data
+      - ${DOCKER_VOLUMES}/MusicAssistant:/data
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
@@ -116,10 +116,10 @@ services: # TODO: Include resource limits for all containers in this stack
         ipv4_address: 172.31.255.254 # MatterHub communicates with HomeAssistant via this static IP in the Docker network defined at the bottom -- this is the only way I managed to allow Matter Hub container in host networking mode to communicate with HomeAssistant which is on MacVLAN network.
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${DOCKER_VOLUMES}/HomeAssistant/config:/config
       - ./configuration.yaml:/config/configuration.yaml:ro # Mount the configuration.yaml from this repository into the container
       - ./pyscript:/config/pyscript:ro # Mount pyscript apps folder from this repository into the container
       - ./pyscript_modules:/config/pyscript_modules:ro # Mount pyscript modules folder from this repository into the container
+      - ${DOCKER_VOLUMES}/HomeAssistant:/config
     # Custom environment variables used within Pyscript for `router_rebooter` app:
     environment:
       - ROUTER_PASSWORD=${ROUTER_PASSWORD}
