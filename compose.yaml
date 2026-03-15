@@ -9,9 +9,8 @@ services: # TODO: Include resource limits for all containers in this stack
       - HomeAssistant
       - Frigate
     volumes:
-      - ${DOCKER_VOLUMES}/MQTT/log:/mosquitto/log
-      - ${DOCKER_VOLUMES}/MQTT/data:/mosquitto/data
-      - ${DOCKER_VOLUMES}/MQTT/config:/mosquitto/config
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
 
   Frigate:
     image: ghcr.io/blakeblackshear/frigate:stable
