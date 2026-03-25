@@ -1,7 +1,7 @@
 name: HomeAssistant
 services: # TODO: Include resource limits for all containers in this stack
   MQTT:
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:2.1.2-alpine
     container_name: MQTT
     restart: unless-stopped
     hostname: mqtt
@@ -13,7 +13,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
 
   Frigate:
-    image: ghcr.io/blakeblackshear/frigate:stable
+    image: ghcr.io/blakeblackshear/frigate:0.17.1
     container_name: Frigate
     restart: unless-stopped
     privileged: true # Must be privileged to enable hardward acceleration. This allows access intel_gpu_top command for gpu stats.
@@ -43,7 +43,7 @@ services: # TODO: Include resource limits for all containers in this stack
 
   MusicAssistant:
     container_name: MusicAssistant
-    image: ghcr.io/music-assistant/server:latest
+    image: ghcr.io/music-assistant/server:2.7.11
     restart: unless-stopped
     hostname: musicassistant
     networks:
@@ -56,7 +56,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
-    image: selenium/standalone-chromium:latest
+    image: selenium/standalone-chromium:145.0.7632.109-chromedriver-145.0.7632.109
     container_name: Chrome
     restart: unless-stopped
     hostname: chrome
@@ -74,7 +74,7 @@ services: # TODO: Include resource limits for all containers in this stack
           memory: 2GB
 
   Glances:
-    image: docker.io/nicolargo/glances
+    image: docker.io/nicolargo/glances:4.5.2
     container_name: Glances
     restart: unless-stopped
     pid: host
@@ -82,13 +82,13 @@ services: # TODO: Include resource limits for all containers in this stack
     networks:
       Glances:
     environment:
-      - GLANCES_OPT=-w # Enable webserver mode (which is required to use the Home Assistant integration)
+      - GLANCES_OPT=-w --disable-webui # Enable webserver mode (which is required to use the Home Assistant integration)
       - TZ=America/Denver
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
   MatterHub:
-    image: ghcr.io/riddix/home-assistant-matter-hub:latest
+    image: ghcr.io/riddix/home-assistant-matter-hub:2.0.35
     container_name: MatterHub
     restart: unless-stopped
     hostname: matterhub
@@ -102,7 +102,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - HomeAssistant
 
   HomeAssistant:
-    image: ghcr.io/home-assistant/home-assistant:latest
+    image: ghcr.io/home-assistant/home-assistant:2026.3.4
     container_name: HomeAssistant
     restart: unless-stopped
     hostname: homeassistant
