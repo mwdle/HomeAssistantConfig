@@ -1,7 +1,7 @@
 name: HomeAssistant
 services: # TODO: Include resource limits for all containers in this stack
   MQTT:
-    image: eclipse-mosquitto:2.1.2-alpine
+    image: eclipse-mosquitto:2.1.2-alpine@sha256:9cfdd46ad59f3e3e5f592f6baf57ab23e1ad00605509d0f5c1e9b179c5314d87
     container_name: MQTT
     restart: unless-stopped
     hostname: mqtt
@@ -13,7 +13,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
 
   Frigate:
-    image: ghcr.io/blakeblackshear/frigate:0.17.1
+    image: ghcr.io/blakeblackshear/frigate:0.17.1@sha256:1724960349dad0bd2ae8ec884171a6fd5755a4dc242a0e66cadbda9c0e85c99b
     container_name: Frigate
     restart: unless-stopped
     privileged: true # Must be privileged to enable hardward acceleration. This allows access intel_gpu_top command for gpu stats.
@@ -43,7 +43,7 @@ services: # TODO: Include resource limits for all containers in this stack
 
   MusicAssistant:
     container_name: MusicAssistant
-    image: ghcr.io/music-assistant/server:2.7.11
+    image: ghcr.io/music-assistant/server:2.7.11@sha256:ff2d625856864912e85ff611dae4c5df814abfb7ffc3bd6020e8426b7af81c1e
     restart: unless-stopped
     hostname: musicassistant
     networks:
@@ -56,7 +56,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
-    image: selenium/standalone-chromium:145.0.7632.109-chromedriver-145.0.7632.109
+    image: selenium/standalone-chromium:145.0.7632.109-chromedriver-145.0.7632.109@sha256:36474a4c56765ec3d04dc4cbac57a021e0d88e89fdb5dca297a50f1100279c1a
     container_name: Chrome
     restart: unless-stopped
     hostname: chrome
@@ -74,7 +74,7 @@ services: # TODO: Include resource limits for all containers in this stack
           memory: 2GB
 
   Glances:
-    image: docker.io/nicolargo/glances:4.5.2
+    image: docker.io/nicolargo/glances:4.5.2@sha256:9ad411687dac6aee071d34f4408e2a9b4d0651acdff4db0544656d0f1224029e
     container_name: Glances
     restart: unless-stopped
     pid: host
@@ -88,7 +88,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
   MatterHub:
-    image: ghcr.io/riddix/home-assistant-matter-hub:2.0.35
+    image: ghcr.io/riddix/home-assistant-matter-hub:2.0.35@sha256:059801c45f151eb8cf4ae6271d4b2ec599f7879b6bf7aaec17f0ac956a4f24c6
     container_name: MatterHub
     restart: unless-stopped
     hostname: matterhub
@@ -102,7 +102,7 @@ services: # TODO: Include resource limits for all containers in this stack
       - HomeAssistant
 
   HomeAssistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.3.4
+    image: ghcr.io/home-assistant/home-assistant:2026.3.4@sha256:916682086154a7390114a9788782b8efb199852d4f7d47066722c2bc5d1829e6
     container_name: HomeAssistant
     restart: unless-stopped
     hostname: homeassistant
