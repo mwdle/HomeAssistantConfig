@@ -54,6 +54,11 @@ services: # TODO: Include resource limits for all containers in this stack
     depends_on:
       - MQTT
 
+    user: "${UID}:${GID}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+
   MusicAssistant:
     container_name: MusicAssistant
     image: ghcr.io/music-assistant/server:2.8.1@sha256:980fab61d07cbccbf7bbe7b5d7fa53cbc9cc04a66146e656bda9329886c2c396
