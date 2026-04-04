@@ -17,6 +17,9 @@ services: # TODO: Include resource limits for all containers in this stack
     security_opt:
       - no-new-privileges:true
 
+    logging:
+      driver: "journald"
+
     deploy:
       resources:
         limits:
@@ -55,6 +58,16 @@ services: # TODO: Include resource limits for all containers in this stack
     security_opt:
       - no-new-privileges:true
 
+    logging:
+      driver: "journald"
+
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2GB
+          pids: 1024
+
   MusicAssistant:
     container_name: MusicAssistant
     image: ghcr.io/music-assistant/server:2.8.1@sha256:980fab61d07cbccbf7bbe7b5d7fa53cbc9cc04a66146e656bda9329886c2c396
@@ -68,6 +81,9 @@ services: # TODO: Include resource limits for all containers in this stack
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/MusicAssistant:/data
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
+
+    logging:
+      driver: "journald"
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
     image: selenium/standalone-chromium:145.0.7632.109-chromedriver-145.0.7632.109@sha256:36474a4c56765ec3d04dc4cbac57a021e0d88e89fdb5dca297a50f1100279c1a
@@ -84,6 +100,9 @@ services: # TODO: Include resource limits for all containers in this stack
 
     security_opt:
       - no-new-privileges:true
+
+    logging:
+      driver: "journald"
 
     deploy:
       resources:
@@ -105,6 +124,9 @@ services: # TODO: Include resource limits for all containers in this stack
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
+    logging:
+      driver: "journald"
+
   MatterHub:
     image: ghcr.io/riddix/home-assistant-matter-hub:2.0.36@sha256:424d3cf30452799e0a5c624f55e5dca98b18aa5b8d7f8931ad48fb90f3886e7f
     container_name: MatterHub
@@ -118,6 +140,9 @@ services: # TODO: Include resource limits for all containers in this stack
       - ${DOCKER_VOLUMES}/MatterHub:/data
     depends_on:
       - HomeAssistant
+
+    logging:
+      driver: "journald"
 
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:2026.4.1@sha256:8848691147f01a6eee7753de2ade21b04d6168fcd2e2a7089f6f84e3b7b86960
@@ -142,6 +167,9 @@ services: # TODO: Include resource limits for all containers in this stack
     environment:
       - ROUTER_PASSWORD=${ROUTER_PASSWORD}
       - EXTENDER_PASSWORD=${EXTENDER_PASSWORD}
+
+    logging:
+      driver: "journald"
 
 networks:
   AAA_LAN:
