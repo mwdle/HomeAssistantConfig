@@ -30,7 +30,7 @@ services: # TODO: Include resource limits for all containers in this stack
     restart: unless-stopped
     cap_add:
       - PERFMON # Required for hardware acceleration. This allows access intel_gpu_top command for gpu stats.
-    shm_size: "128mb" # https://docs.frigate.video/frigate/installation/#calculating-required-shm-size
+    shm_size: 256M # https://docs.frigate.video/frigate/installation/#calculating-required-shm-size
     devices:
       - /dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
     ports:
