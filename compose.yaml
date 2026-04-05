@@ -22,11 +22,11 @@ services: # TODO: Include resource limits for all containers in this stack
     logging:
       driver: "journald"
     healthcheck:
-      test: mosquitto_sub -t check -C 1 -W 3 2>&1 | grep -q 'not authorised' || exit 1
+      test: mosquitto_sub -t check -C 1 -W 4 2>&1 | grep -q 'not authorised' || exit 1
       interval: 1m
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
     deploy:
       resources:
@@ -39,8 +39,6 @@ services: # TODO: Include resource limits for all containers in this stack
     image: ghcr.io/blakeblackshear/frigate:0.17.1@sha256:1724960349dad0bd2ae8ec884171a6fd5755a4dc242a0e66cadbda9c0e85c99b
     container_name: Frigate
     restart: unless-stopped
-    cap_add:
-      - PERFMON # Required for hardware acceleration. This allows access intel_gpu_top command for gpu stats.
     shm_size: 256M # https://docs.frigate.video/frigate/installation/#calculating-required-shm-size
     devices:
       - /dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
@@ -65,6 +63,8 @@ services: # TODO: Include resource limits for all containers in this stack
 
     security_opt:
       - no-new-privileges:true
+    cap_add:
+      - PERFMON # Required for hardware acceleration. This allows access intel_gpu_top command for gpu stats.
 
     logging:
       driver: "journald"
