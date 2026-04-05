@@ -21,6 +21,12 @@ services: # TODO: Include resource limits for all containers in this stack
 
     logging:
       driver: "journald"
+    healthcheck:
+      test: mosquitto_sub -t check -C 1 -W 3 2>&1 | grep -q 'not authorised' || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
     deploy:
       resources:
