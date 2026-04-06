@@ -43,7 +43,9 @@ services:
     devices:
       - /dev/dri/renderD128 # For intel hwaccel, needs to be updated for your hardware
     ports:
-      - "8555:8555" # WebRTC
+      # WebRTC
+      - 8555:8555/tcp
+      - 8555:8555/udp
     hostname: frigate
     networks:
       - Frigate
@@ -61,8 +63,15 @@ services:
 
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     cap_add:
-      - PERFMON # Required for hardware acceleration. This allows access intel_gpu_top command for gpu stats.
+      - CHOWN
+      - FOWNER
+      - SETUID
+      - SETGID
+      - NET_RAW
+      - PERFMON # For Intel GPU stats
 
     logging:
       driver: "journald"
@@ -88,33 +97,67 @@ services:
       - ${DOCKER_VOLUMES}/MusicAssistant:/data
       - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
 
+    user: "${UID}:${GID}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
     logging:
       driver: "journald"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8095/ || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1GB
+          pids: 128
 
   Chrome: # Allows running Selenium scripts using Pyscript within Home Assistant
     image: selenium/standalone-chromium:145.0.7632.109-chromedriver-145.0.7632.109@sha256:36474a4c56765ec3d04dc4cbac57a021e0d88e89fdb5dca297a50f1100279c1a
     container_name: Chrome
     restart: unless-stopped
     hostname: chrome
-    shm_size: 2g # Required unless using option `--disable-dev-shm-usage`
     networks:
       - Chrome
     environment:
       - SE_START_VNC=false
       - SE_START_NO_VNC=false
       - SE_START_XVFB=false
+    volumes:
+      - selenium_opt:/opt/selenium
+      - selenium_home:/home/seluser
 
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
 
     logging:
       driver: "journald"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:4444/status || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
     deploy:
       resources:
         limits:
-          cpus: "1"
-          memory: 2GB
+          cpus: 1
+          memory: 1GB
+          pids: 256
 
   Glances:
     image: docker.io/nicolargo/glances:4.5.2@sha256:9ad411687dac6aee071d34f4408e2a9b4d0651acdff4db0544656d0f1224029e
@@ -127,11 +170,36 @@ services:
     environment:
       - GLANCES_OPT=-w --disable-webui # Enable webserver mode (which is required to use the Home Assistant integration)
       - TZ=America/Denver
+      - USER=${UID} # Fix for running container as custom UID
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
+    user: "${UID}:${GID}"
+    group_add:
+      - ${DOCKER_GID} # Replace this with the output from `getent group docker | cut -d: -f3` on your host machine in order to ensure Glances has read permission for Docker Socket
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
     logging:
-      driver: "journald"
+      driver: journald
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:61208/api/4/status || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    deploy:
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 128M
+          pids: 50
 
   MatterHub:
     image: ghcr.io/riddix/home-assistant-matter-hub:2.0.36@sha256:424d3cf30452799e0a5c624f55e5dca98b18aa5b8d7f8931ad48fb90f3886e7f
@@ -198,3 +266,5 @@ networks:
 
 volumes:
   frigate_media:
+  selenium_opt:
+  selenium_home:
