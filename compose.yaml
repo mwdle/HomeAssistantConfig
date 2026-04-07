@@ -229,7 +229,7 @@ services:
       interval: 1m
       timeout: 5s
       retries: 3
-      start_period: 60s
+      start_period: 30s
 
     deploy:
       resources:
@@ -262,8 +262,28 @@ services:
       - ROUTER_PASSWORD=${ROUTER_PASSWORD}
       - EXTENDER_PASSWORD=${EXTENDER_PASSWORD}
 
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW # Required by HomeAssistant to watch DHCP packets
+
     logging:
-      driver: "journald"
+      driver: journald
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1.5GB
+          pids: 256
 
 networks:
   AAA_LAN:
