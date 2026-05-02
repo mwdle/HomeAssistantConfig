@@ -90,7 +90,6 @@ services:
     hostname: musicassistant
     networks:
       AAA_LAN:
-        mac_address: 0A:00:00:00:00:01 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
       MusicAssistant:
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -245,7 +244,6 @@ services:
     hostname: homeassistant
     networks:
       AAA_LAN:
-        mac_address: 0A:00:00:00:00:02 # Set static LAN MAC address for container (e.g. MAC address used in `AAA_LAN` MacVLAN network persists between container stops/starts)
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
