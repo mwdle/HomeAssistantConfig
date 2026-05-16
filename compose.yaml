@@ -253,9 +253,11 @@ services:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
       MatterHub:
+    configs:
+      - source: home_assistant_config
+        target: /config/configuration.yaml
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./configuration.yaml:/config/configuration.yaml:ro # Mount the configuration.yaml from this repository into the container
       - ./pyscript:/config/pyscript:ro # Mount pyscript apps folder from this repository into the container
       - ./pyscript_modules:/config/pyscript_modules:ro # Mount pyscript modules folder from this repository into the container
       - ${DOCKER_VOLUMES}/HomeAssistant:/config
@@ -306,6 +308,8 @@ networks:
 configs:
   mqtt_config:
     file: ./mosquitto.conf
+  home_assistant_config:
+    file: ./configuration.yaml
 
 volumes:
   frigate_media:
