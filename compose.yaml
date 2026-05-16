@@ -8,8 +8,10 @@ services:
     networks:
       - HomeAssistant
       - Frigate
+    configs:
+      - source: mqtt_config
+        target: /mosquitto/config/mosquitto.conf
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
 
     user: "${UID}:${GID}"
@@ -300,6 +302,10 @@ networks:
     external: true
   MatterHub:
     external: true
+
+configs:
+  mqtt_config:
+    file: ./mosquitto.conf
 
 volumes:
   frigate_media:
