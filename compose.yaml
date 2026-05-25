@@ -267,6 +267,8 @@ services:
     environment:
       - ROUTER_PASSWORD=${ROUTER_PASSWORD}
       - EXTENDER_PASSWORD=${EXTENDER_PASSWORD}
+    depends_on:
+      - Glances
 
     security_opt:
       - no-new-privileges:true
