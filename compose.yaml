@@ -93,7 +93,8 @@ services:
     restart: unless-stopped
     hostname: musicassistant
     networks:
-      AAA_LAN:
+      LAN:
+        gw_priority: 1
       MusicAssistant:
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -210,7 +211,8 @@ services:
     restart: unless-stopped
     hostname: matterhub
     networks:
-      AAA_LAN:
+      LAN:
+        gw_priority: 1
       MatterHub:
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
@@ -251,7 +253,8 @@ services:
     restart: unless-stopped
     hostname: homeassistant
     networks:
-      AAA_LAN:
+      LAN:
+        gw_priority: 1
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
@@ -295,8 +298,10 @@ services:
           pids: 256
 
 networks:
-  AAA_LAN:
+  # macvlan network
+  LAN:
     external: true
+  # bridge networks
   HomeAssistant:
     external: true
   Chrome:
