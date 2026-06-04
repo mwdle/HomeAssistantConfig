@@ -64,6 +64,8 @@ services:
     environment:
       FRIGATE_MQTT_USER: "${MQTT_USER}"
       FRIGATE_MQTT_PASSWORD: "${MQTT_PASSWORD}"
+    depends_on:
+      - MQTT
 
     security_opt:
       - no-new-privileges:true
@@ -221,7 +223,8 @@ services:
     volumes:
       - ${DOCKER_VOLUMES}/MatterHub:/data
     depends_on:
-      - HomeAssistant
+      HomeAssistant:
+        condition: service_healthy
 
     user: "${UID}:${GID}"
     read_only: true
@@ -271,7 +274,11 @@ services:
       - ROUTER_PASSWORD=${ROUTER_PASSWORD}
       - EXTENDER_PASSWORD=${EXTENDER_PASSWORD}
     depends_on:
+      - Chrome
+      - Frigate
       - Glances
+      - MQTT
+      - MusicAssistant
 
     security_opt:
       - no-new-privileges:true
