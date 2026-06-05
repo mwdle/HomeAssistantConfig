@@ -215,7 +215,6 @@ services:
     networks:
       LAN:
         gw_priority: 1
-      MatterHub:
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
@@ -260,7 +259,6 @@ services:
       HomeAssistant:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
-      MatterHub:
     configs:
       - source: home_assistant_config
         target: /config/configuration.yaml
@@ -317,8 +315,6 @@ networks:
   MusicAssistant:
     external: true
   Glances:
-    external: true
-  MatterHub:
     external: true
 
 configs:
