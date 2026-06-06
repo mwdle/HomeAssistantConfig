@@ -215,13 +215,13 @@ services:
     networks:
       LAN:
         gw_priority: 1
-        priority: 1
       MatterHub:
+        priority: 1
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
       - HAMH_HTTP_PORT=8482
-      - HAMH_MDNS_NETWORK_INTERFACE=eth0
+      - HAMH_MDNS_NETWORK_INTERFACE=eth1
       - HAMH_LOG_LEVEL=debug
       - HAMH_MDNS_STRIP_GLOBAL_IPV6=true
     volumes:
