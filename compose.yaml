@@ -216,7 +216,10 @@ services:
       LAN:
         gw_priority: 1
     sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.default.disable_ipv6=0
       - net.ipv6.conf.all.accept_ra=2
+      - net.ipv6.conf.default.accept_ra=2
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
