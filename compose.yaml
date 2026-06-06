@@ -216,7 +216,7 @@ services:
       LAN:
         gw_priority: 1
         mac_address: "0A:00:00:00:00:01" # Set static LAN MAC address for container (e.g. MAC address persists between container stops/starts for stable link local and ULA IPV6 addresses)
-      MatterHub:
+      # MatterHub:
     environment:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
