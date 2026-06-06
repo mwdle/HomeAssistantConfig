@@ -217,6 +217,7 @@ services:
       - HAMH_HOME_ASSISTANT_URL=http://172.31.255.254:8123/ # Connect to HomeAssistant via its static IP in the MatterHub Docker network defined at the bottom of this file. I was unable to get Matter Hub to work properly on a MacVLAN network -- host networking is required for this container which complicates communication with HomeAssistant container which IS on a MacVLAN network.
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
       - HAMH_HTTP_PORT=8482
+      - HAMH_MDNS_NETWORK_INTERFACE=eno1
       - HAMH_LOG_LEVEL=debug
       # - HAMH_MDNS_STRIP_GLOBAL_IPV6=true
     volumes:
