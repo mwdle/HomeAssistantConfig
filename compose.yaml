@@ -208,7 +208,7 @@ services:
           pids: 50
 
   MatterHub:
-    image: ghcr.io/riddix/home-assistant-matter-hub:2.0.46@sha256:f52d5629ffcf9b9c8321dcb477bcc5ddbc5afd65a9dd6538a6d8df45c1ff385b
+    image: ghcr.io/riddix/home-assistant-matter-hub:2.1.0-alpha.719
     container_name: MatterHub
     restart: unless-stopped
     hostname: matterhub
