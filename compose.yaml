@@ -276,13 +276,12 @@ services:
       retries: 3
       start_period: 30s
 
-    # TODO: test resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: 0.5
-    #       memory: 256M
-    #       pids: 50
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 512M
+          pids: 50
 
   Whisper:
     image: rhasspy/wyoming-whisper@sha256:966e1b0967f398b81fa2273a96b2b940004fa1b77754f9ffda6b5689a58dd158
@@ -315,13 +314,12 @@ services:
       retries: 3
       start_period: 30s
 
-    # TODO: test resource limits
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: 0.5
-    #       memory: 256M
-    #       pids: 50
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 512M
+          pids: 50
 
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:2026.6.3@sha256:aed891b8f801072302815b4b0fab5adb714182967e9d2e2d4a2be558241c73ad
