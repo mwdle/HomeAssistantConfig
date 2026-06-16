@@ -290,6 +290,8 @@ services:
     networks:
       Whisper:
     command: --model tiny-int8 --language en
+    environment:
+      - HF_HOME=/data/cache
     volumes:
       - ${DOCKER_VOLUMES}/Whisper:/data
 
