@@ -268,11 +268,11 @@ services:
     logging:
       driver: journald
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:5000/ || exit 1
+      test: bash -c '</dev/tcp/127.0.0.1/10200' 2>/dev/null || exit 1
       interval: 1m
       timeout: 5s
       retries: 3
-      start_period: 15s
+      start_period: 30s
 
     # TODO: test resource limits
     # deploy:
@@ -302,7 +302,12 @@ services:
 
     logging:
       driver: journald
-    # TODO: healthcheck
+    healthcheck:
+      test: bash -c '</dev/tcp/127.0.0.1/10300' 2>/dev/null || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
     # TODO: test resource limits
     # deploy:
