@@ -247,6 +247,71 @@ services:
           memory: 256M
           pids: 50
 
+  Piper:
+    image: rhasspy/wyoming-piper
+    container_name: Piper
+    restart: unless-stopped
+    hostname: piper
+    networks:
+      Piper:
+    command: --voice en_US-lessac-medium
+    volumes:
+      - ${DOCKER_VOLUMES}/Piper:/data
+
+    user: "${UID}:${GID}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: journald
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:5000/ || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    # TODO: test resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: 0.5
+    #       memory: 256M
+    #       pids: 50
+
+  Whisper:
+    image: rhasspy/wyoming-whisper
+    container_name: Whisper
+    restart: unless-stopped
+    hostname: whisper
+    networks:
+      Whisper:
+    command: --model tiny-int8 --language en
+    volumes:
+      - ${DOCKER_VOLUMES}/Whisper:/data
+
+    user: "${UID}:${GID}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: journald
+    # TODO: healthcheck
+
+    # TODO: test resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: 0.5
+    #       memory: 256M
+    #       pids: 50
+
   HomeAssistant:
     image: ghcr.io/home-assistant/home-assistant:2026.6.3@sha256:aed891b8f801072302815b4b0fab5adb714182967e9d2e2d4a2be558241c73ad
     container_name: HomeAssistant
@@ -259,6 +324,8 @@ services:
       Chrome: # Used by pyscript `router_rebooter` module for Selenium within HA
       Glances:
       MatterHub:
+      Piper:
+      Whisper:
     configs:
       - source: home_assistant_config
         target: /config/configuration.yaml
@@ -277,6 +344,8 @@ services:
       - Glances
       - MQTT
       - MusicAssistant
+      - Piper
+      - Whisper
 
     security_opt:
       - no-new-privileges:true
@@ -317,6 +386,10 @@ networks:
   Glances:
     external: true
   MatterHub:
+    external: true
+  Piper:
+    external: true
+  Whisper:
     external: true
 
 configs:
