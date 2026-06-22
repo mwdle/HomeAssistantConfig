@@ -1,44 +1,5 @@
 name: HomeAssistant
 services:
-  MQTT:
-    image: eclipse-mosquitto:2.1.2-alpine@sha256:a908c65cc8e67ec9d292ef27c2c0360dbaaee7eb1b935cdd194e67697f15dea1
-    container_name: MQTT
-    restart: unless-stopped
-    hostname: mqtt
-    networks:
-      - HomeAssistant
-      - Frigate
-    configs:
-      - source: mqtt_config
-        target: /mosquitto/config/mosquitto.conf
-    volumes:
-      - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
-
-    user: "${UID}:${GID}"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
-    logging:
-      driver: "journald"
-    healthcheck:
-      test: mosquitto_sub -t check -C 1 -W 4 2>&1 | grep -q 'not authorised' || exit 1
-      interval: 1m
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-
-    deploy:
-      update_config:
-        order: start-first
-      resources:
-        limits:
-          cpus: 0.25
-          memory: 32M
-          pids: 4
-
   Frigate:
     image: ghcr.io/blakeblackshear/frigate:0.17.1@sha256:1724960349dad0bd2ae8ec884171a6fd5755a4dc242a0e66cadbda9c0e85c99b
     container_name: Frigate
@@ -89,45 +50,6 @@ services:
           memory: 2GB
           pids: 1024
 
-  MusicAssistant:
-    container_name: MusicAssistant
-    image: ghcr.io/music-assistant/server:2.9.2@sha256:5278740e2ea119a72c6819b36ccfdab7df160d7a3a886dad0b58c3980e153012
-    restart: unless-stopped
-    hostname: musicassistant
-    networks:
-      LAN:
-        gw_priority: 1
-      MusicAssistant:
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${DOCKER_VOLUMES}/MusicAssistant:/data
-      - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
-
-    user: "${UID}:${GID}"
-    read_only: true
-    tmpfs:
-      - /tmp
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
-    logging:
-      driver: "journald"
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8095/ || exit 1
-      interval: 1m
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-
-    deploy:
-      resources:
-        limits:
-          cpus: 2
-          memory: 1GB
-          pids: 128
-
   Glances:
     image: docker.io/nicolargo/glances:4.5.5@sha256:9ac5de7debffb1e5746654585daaf1d23179ea91fbdfd4c25a7a17945d9c74bf
     container_name: Glances
@@ -170,6 +92,58 @@ services:
           memory: 256M
           pids: 50
 
+  HomeAssistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.6.4@sha256:adb3341e31e03e0048e60d8c1cf952e118a381ae258bb921d3da12a3b27bf0c2
+    container_name: HomeAssistant
+    restart: unless-stopped
+    hostname: homeassistant
+    networks:
+      LAN:
+        gw_priority: 1
+      HomeAssistant:
+      Glances:
+      MatterHub:
+      Piper:
+      Whisper:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./pyscript:/config/pyscript:ro # Mount pyscript apps folder from this repository into the container
+      - ./pyscript_modules:/config/pyscript_modules:ro # Mount pyscript modules folder from this repository into the container
+      - ${DOCKER_VOLUMES}/HomeAssistant:/config
+      # Required for Bluetooth
+      - /var/run/dbus:/run/dbus:ro
+    depends_on:
+      - Frigate
+      - Glances
+      - MQTT
+      - MusicAssistant
+      - Piper
+      - Whisper
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW # Required for DHCP / Bluetooth capabilities
+      - NET_ADMIN # Required for Bluetooth
+
+    logging:
+      driver: journald
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1.5GB
+          pids: 256
+
   MatterHub:
     image: ghcr.io/riddix/home-assistant-matter-hub:2.0.48@sha256:9f638549d2c6dfa614507e5c408bb4970a7fa674bef38c4c9ae4a3712a0ba739
     container_name: MatterHub
@@ -207,6 +181,84 @@ services:
           cpus: 0.5
           memory: 256M
           pids: 50
+
+  MQTT:
+    image: eclipse-mosquitto:2.1.2-alpine@sha256:a908c65cc8e67ec9d292ef27c2c0360dbaaee7eb1b935cdd194e67697f15dea1
+    container_name: MQTT
+    restart: unless-stopped
+    hostname: mqtt
+    networks:
+      - HomeAssistant
+      - Frigate
+    configs:
+      - source: mqtt_config
+        target: /mosquitto/config/mosquitto.conf
+    volumes:
+      - ${DOCKER_VOLUMES}/MQTT/mosquitto.passwd:/mosquitto/config/mosquitto.passwd:ro
+
+    user: "${UID}:${GID}"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: "journald"
+    healthcheck:
+      test: mosquitto_sub -t check -C 1 -W 4 2>&1 | grep -q 'not authorised' || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    deploy:
+      update_config:
+        order: start-first
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 32M
+          pids: 4
+
+  MusicAssistant:
+    container_name: MusicAssistant
+    image: ghcr.io/music-assistant/server:2.9.2@sha256:5278740e2ea119a72c6819b36ccfdab7df160d7a3a886dad0b58c3980e153012
+    restart: unless-stopped
+    hostname: musicassistant
+    networks:
+      LAN:
+        gw_priority: 1
+      MusicAssistant:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DOCKER_VOLUMES}/MusicAssistant:/data
+      - ${MUSIC_VOLUME}:/media:ro # Read only is necessary if you're mounting music from a folder within Nextcloud's internal storage in order to prevent data corruption and other issues.
+
+    user: "${UID}:${GID}"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: "journald"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8095/ || exit 1
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 1GB
+          pids: 128
 
   Piper:
     image: rhasspy/wyoming-piper:2.2.2@sha256:c874e4a04657ae3381332ee5d0c8c70a310dae6722892840f530ac0890b44eb3
@@ -282,72 +334,20 @@ services:
           memory: 512M
           pids: 50
 
-  HomeAssistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.6.4@sha256:adb3341e31e03e0048e60d8c1cf952e118a381ae258bb921d3da12a3b27bf0c2
-    container_name: HomeAssistant
-    restart: unless-stopped
-    hostname: homeassistant
-    networks:
-      LAN:
-        gw_priority: 1
-      HomeAssistant:
-      Glances:
-      MatterHub:
-      Piper:
-      Whisper:
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./pyscript:/config/pyscript:ro # Mount pyscript apps folder from this repository into the container
-      - ./pyscript_modules:/config/pyscript_modules:ro # Mount pyscript modules folder from this repository into the container
-      - ${DOCKER_VOLUMES}/HomeAssistant:/config
-      # Required for Bluetooth
-      - /var/run/dbus:/run/dbus:ro
-    depends_on:
-      - Frigate
-      - Glances
-      - MQTT
-      - MusicAssistant
-      - Piper
-      - Whisper
-
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_RAW # Required for DHCP / Bluetooth capabilities
-      - NET_ADMIN # Required for Bluetooth
-
-    logging:
-      driver: journald
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ || exit 1
-      interval: 1m
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-
-    deploy:
-      resources:
-        limits:
-          cpus: 2
-          memory: 1.5GB
-          pids: 256
-
 networks:
   # macvlan network
   LAN:
     external: true
   # bridge networks
-  HomeAssistant:
-    external: true
   Frigate:
-    external: true
-  MusicAssistant:
     external: true
   Glances:
     external: true
+  HomeAssistant:
+    external: true
   MatterHub:
+    external: true
+  MusicAssistant:
     external: true
   Piper:
     external: true
