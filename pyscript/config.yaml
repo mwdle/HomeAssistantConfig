@@ -1,3 +1,0 @@
-allow_all_imports: true # Required when using `pyscript_modules`
-apps:
-  router_rebooter:
