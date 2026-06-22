@@ -1,6 +1,6 @@
 # Multi-Service Docker Compose Configuration for Home Assistant
 
-A sample Docker Compose configuration for the smart home and supportive services I use: [Home Assistant](https://www.home-assistant.io/), [Mosquitto MQTT](https://mosquitto.org/), [Frigate NVR](https://frigate.video/), [Music Assistant](https://music-assistant.io/), [Glances](https://github.com/nicolargo/glances), and [Home Assistant Matter Hub (Riddix Fork)](https://github.com/RiDDiX/home-assistant-matter-hub).
+A sample Docker Compose configuration for the smart home and supportive services I use: [Frigate NVR](https://frigate.video/), [Glances](https://github.com/nicolargo/glances), [Home Assistant](https://www.home-assistant.io/), [Home Assistant Matter Hub (Riddix Fork)](https://github.com/RiDDiX/home-assistant-matter-hub), [Mosquitto MQTT](https://mosquitto.org/), [Music Assistant](https://music-assistant.io/), [Wyoming Piper](https://github.com/rhasspy/wyoming-piper), and [Wyoming Faster Whisper](https://github.com/rhasspy/wyoming-faster-whisper).
 
 ## License
 
