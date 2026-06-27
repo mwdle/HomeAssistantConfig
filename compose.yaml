@@ -102,7 +102,6 @@ services:
         gw_priority: 1
       HomeAssistant:
       Glances:
-      MatterHub:
       Piper:
       Whisper:
     volumes:
@@ -143,43 +142,6 @@ services:
           cpus: 2
           memory: 1.5GB
           pids: 256
-
-  MatterHub:
-    image: ghcr.io/riddix/home-assistant-matter-hub:2.0.48@sha256:9f638549d2c6dfa614507e5c408bb4970a7fa674bef38c4c9ae4a3712a0ba739
-    container_name: MatterHub
-    restart: unless-stopped
-    hostname: matterhub
-    networks:
-      LAN:
-        gw_priority: 1
-        mac_address: "0A:00:00:00:00:01" # Set static MAC address on macvlan interface (e.g. MAC address persists between container stops/starts for stable link local and ULA IPV6 addresses)
-      MatterHub:
-    environment:
-      - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
-      - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
-      - HAMH_HTTP_PORT=8482
-    volumes:
-      - ${DOCKER_VOLUMES}/MatterHub:/data
-    depends_on:
-      HomeAssistant:
-        condition: service_healthy
-
-    user: "${UID}:${GID}"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
-    logging:
-      driver: journald
-
-    deploy:
-      resources:
-        limits:
-          cpus: 0.5
-          memory: 256M
-          pids: 50
 
   MQTT:
     image: eclipse-mosquitto:2.1.2-alpine@sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797
@@ -343,8 +305,6 @@ networks:
   Glances:
     external: true
   HomeAssistant:
-    external: true
-  MatterHub:
     external: true
   MusicAssistant:
     external: true
