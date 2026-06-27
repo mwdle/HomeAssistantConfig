@@ -158,7 +158,6 @@ services:
       - HAMH_HOME_ASSISTANT_URL=http://HomeAssistant:8123/
       - HAMH_HOME_ASSISTANT_ACCESS_TOKEN=${HA_ACCESS_TOKEN}
       - HAMH_HTTP_PORT=8482
-      - HAMH_MDNS_STRIP_GLOBAL_IPV6=true
     volumes:
       - ${DOCKER_VOLUMES}/MatterHub:/data
     depends_on:
