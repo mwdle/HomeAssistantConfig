@@ -220,8 +220,8 @@ services:
       resources:
         limits:
           cpus: 2
-          memory: 1GB
-          pids: 128
+          memory: 1.5GB
+          pids: 256
 
   Piper:
     image: rhasspy/wyoming-piper:2.2.2@sha256:c874e4a04657ae3381332ee5d0c8c70a310dae6722892840f530ac0890b44eb3
