@@ -14,6 +14,7 @@ services:
     hostname: frigate
     networks:
       - Frigate
+      - MQTT
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${DOCKER_VOLUMES}/Frigate:/config
@@ -98,11 +99,15 @@ services:
     restart: unless-stopped
     hostname: homeassistant
     networks:
+      # macvlan network
       LAN:
         gw_priority: 1
         ipv4_address: 10.0.11.11
-      HomeAssistant:
+      # bridge networks:
+      Frigate:
       Glances:
+      HomeAssistant:
+      MQTT:
       Piper:
       Whisper:
     volumes:
@@ -150,8 +155,7 @@ services:
     restart: unless-stopped
     hostname: mqtt
     networks:
-      - HomeAssistant
-      - Frigate
+      - MQTT
     configs:
       - source: mqtt_config
         target: /mosquitto/config/mosquitto.conf
@@ -189,9 +193,11 @@ services:
     restart: unless-stopped
     hostname: musicassistant
     networks:
+      # macvlan network
       LAN:
         gw_priority: 1
         ipv4_address: 10.0.11.12
+      # bridge network
       MusicAssistant:
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -307,6 +313,8 @@ networks:
   Glances:
     external: true
   HomeAssistant:
+    external: true
+  MQTT:
     external: true
   MusicAssistant:
     external: true
