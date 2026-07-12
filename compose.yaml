@@ -61,8 +61,8 @@ services:
       Glances:
     environment:
       - GLANCES_OPT=-w --disable-webui # Enable webserver mode (which is required to use the Home Assistant integration)
-      - TZ=America/Denver
-      - USER=${UID} # Fix for running container as custom UID
+      - TZ=${TZ}
+      - USER=${UID}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allow Glances to report information about the state of Docker Containers on the host
 
@@ -104,7 +104,6 @@ services:
         gw_priority: 1
         ipv4_address: 10.0.11.11
       # bridge networks:
-      Frigate:
       Glances:
       HomeAssistant:
       MQTT:
@@ -122,6 +121,7 @@ services:
       - Glances
       - MQTT
       - MusicAssistant
+      - ntfy
       - Piper
       - Whisper
 
@@ -227,6 +227,60 @@ services:
         limits:
           cpus: 2
           memory: 1.5GB
+          pids: 256
+
+  ntfy:
+    container_name: ntfy
+    image: binwiederhier/ntfy:v2.26@sha256:a6d335064ae927c4dbef118e1fa39656b3d2e01472b2a82af5915d5cebfe815f
+    restart: unless-stopped
+    hostname: ntfy
+    networks:
+      ntfy:
+    init: true # needed if healthcheck is used to prevent zombie processes
+    command: serve
+    environment:
+      NTFY_ATTACHMENT_CACHE_DIR: "/var/cache/ntfy/attachments"
+      NTFY_ATTACHMENT_EXPIRY_DURATION: "24h"
+      NTFY_ATTACHMENT_TOTAL_SIZE_LIMIT: "10G"
+      NTFY_AUTH_FILE: "/var/lib/ntfy/auth.db"
+      NTFY_AUTH_DEFAULT_ACCESS: "deny-all"
+      NTFY_AUTH_USERS: "${NTFY_AUTH_USERS}"
+      NTFY_AUTH_ACCESS: "${NTFY_AUTH_ACCESS}"
+      NTFY_CACHE_DURATION: "14d"
+      NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
+      NTFY_BASE_URL: "${NTFY_BASE_URL}"
+      NTFY_BEHIND_PROXY: "true"
+      NTFY_ENABLE_LOGIN: "true"
+      NTFY_REQUIRE_LOGIN: "true"
+      TZ: "${TZ}"
+    volumes:
+      - ${DOCKER_VOLUMES}/ntfy/cache:/var/cache/ntfy
+      - ${DOCKER_VOLUMES}/ntfy/data:/var/lib/ntfy
+
+    user: "${UID}:${GID}"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    logging:
+      driver: "journald"
+    healthcheck:
+      test: wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '"healthy"\s*:\s*true' || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # TODO: test and further constrain resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1GB
           pids: 512
 
   Piper:
@@ -317,6 +371,8 @@ networks:
   MQTT:
     external: true
   MusicAssistant:
+    external: true
+  ntfy:
     external: true
   Piper:
     external: true
