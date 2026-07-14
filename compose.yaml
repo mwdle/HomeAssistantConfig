@@ -240,13 +240,13 @@ services:
     command: serve
     environment:
       NTFY_ATTACHMENT_CACHE_DIR: "/var/cache/ntfy/attachments"
-      NTFY_ATTACHMENT_EXPIRY_DURATION: "24h"
-      NTFY_ATTACHMENT_TOTAL_SIZE_LIMIT: "10G"
+      NTFY_ATTACHMENT_EXPIRY_DURATION: "30d"
+      NTFY_ATTACHMENT_TOTAL_SIZE_LIMIT: "5G"
       NTFY_AUTH_FILE: "/var/lib/ntfy/auth.db"
       NTFY_AUTH_DEFAULT_ACCESS: "deny-all"
       NTFY_AUTH_USERS: "${NTFY_AUTH_USERS}"
       NTFY_AUTH_ACCESS: "${NTFY_AUTH_ACCESS}"
-      NTFY_CACHE_DURATION: "14d"
+      NTFY_CACHE_DURATION: "30d"
       NTFY_CACHE_FILE: "/var/cache/ntfy/cache.db"
       NTFY_BASE_URL: "${NTFY_BASE_URL}"
       NTFY_BEHIND_PROXY: "true"
