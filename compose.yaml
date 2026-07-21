@@ -231,7 +231,7 @@ services:
 
   ntfy:
     container_name: ntfy
-    image: binwiederhier/ntfy:v2.26@sha256:a6d335064ae927c4dbef118e1fa39656b3d2e01472b2a82af5915d5cebfe815f
+    image: binwiederhier/ntfy:v2.26.3@sha256:a6d335064ae927c4dbef118e1fa39656b3d2e01472b2a82af5915d5cebfe815f
     restart: unless-stopped
     hostname: ntfy
     networks:
