@@ -308,12 +308,6 @@ services:
 
     logging:
       driver: journald
-    healthcheck:
-      test: bash -c '</dev/tcp/127.0.0.1/10200' 2>/dev/null || exit 1
-      interval: 1m
-      timeout: 5s
-      retries: 3
-      start_period: 30s
 
     deploy:
       resources:
