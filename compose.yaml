@@ -185,7 +185,7 @@ services:
         limits:
           cpus: 0.25
           memory: 32M
-          pids: 4
+          pids: 10
 
   MusicAssistant:
     container_name: MusicAssistant
