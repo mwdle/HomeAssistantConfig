@@ -39,7 +39,6 @@ services:
       - SETUID
       - SETGID
       - NET_RAW
-      - PERFMON # For Intel GPU stats
 
     logging:
       driver: "journald"
