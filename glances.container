@@ -2,6 +2,8 @@
 Image=docker.io/nicolargo/glances:4.5.7@sha256:28e4038aa2f2d635f4e6e1e3c7667ce4a808326cb918bba99b0041548b6e7425
 ContainerName=glances
 
+Network=glances.network
+
 PublishPort=127.0.0.1:61208:61208
 
 # Enable webserver mode (which is required to use the Home Assistant integration)
