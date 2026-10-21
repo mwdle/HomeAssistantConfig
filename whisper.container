@@ -1,0 +1,40 @@
+[Container]
+Image=docker.io/rhasspy/wyoming-whisper:3.8.1@sha256:ba6fcb6056ebe237d15a325381763a80af2fc8fcedaa04f6a714a7375eb20d80
+ContainerName=whisper
+
+PublishPort=127.0.0.1:10300:10300
+
+Volume=%h/containers/whisper:/data:U,Z
+
+ReadOnly=true
+ReadOnlyTmpfs=false
+Tmpfs=/tmp:noexec,nosuid
+
+User=1000
+Group=1000
+UserNS=auto
+NoNewPrivileges=true
+DropCapability=all
+
+Exec=--model tiny-int8 --language en
+
+HealthStartupCmd=["/usr/src/.venv/bin/python3", "-m", "wyoming_faster_whisper.health_check"]
+HealthStartupInterval=5s
+HealthStartupTimeout=5s
+HealthCmd=["/usr/src/.venv/bin/python3", "-m", "wyoming_faster_whisper.health_check"]
+HealthInterval=30s
+HealthTimeout=20s
+HealthOnFailure=kill
+Notify=healthy
+
+Memory=512M
+PidsLimit=50
+
+[Service]
+CPUQuota=200%
+Restart=always
+RestartSec=5s
+ExecStartPre=mkdir -p -m 0700 %h/containers/whisper
+
+[Install]
+WantedBy=default.target

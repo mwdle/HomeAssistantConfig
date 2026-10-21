@@ -1,0 +1,35 @@
+[Container]
+Image=ghcr.io/home-assistant/home-assistant:2026.10.0@sha256:1b64d38f38d922bf9d59336451fd6453e1d614f934456af4ee3d2a51061be3a4
+ContainerName=home-assistant
+
+Network=host
+
+Volume=%h/containers/home-assistant:/config:U,Z
+
+UserNS=auto
+NoNewPrivileges=true
+DropCapability=all
+AddCapability=NET_RAW
+
+HealthStartupCmd=wget --no-verbose --tries=1 --spider http://localhost:8123/ || exit 1
+HealthStartupInterval=5s
+HealthStartupTimeout=5s
+HealthCmd=wget --no-verbose --tries=1 --spider http://localhost:8123/ || exit 1
+HealthInterval=60s
+HealthTimeout=5s
+HealthOnFailure=kill
+Notify=healthy
+
+StopTimeout=60
+
+Memory=1.5G
+PidsLimit=256
+
+[Service]
+CPUQuota=200%
+Restart=always
+RestartSec=5s
+ExecStartPre=mkdir -p -m 0700 %h/containers/home-assistant
+
+[Install]
+WantedBy=default.target

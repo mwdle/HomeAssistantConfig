@@ -1,0 +1,40 @@
+[Container]
+Image=docker.io/rhasspy/wyoming-piper:2.5.2@sha256:7d39aafac409c2b6b09d999ed04d84c311d632e558b35baa60fad6aac722af7a
+ContainerName=piper
+
+PublishPort=127.0.0.1:10200:10200
+
+Volume=%h/containers/piper:/data:U,Z
+
+ReadOnly=true
+ReadOnlyTmpfs=false
+Tmpfs=/tmp:noexec,nosuid
+
+User=1000
+Group=1000
+UserNS=auto
+NoNewPrivileges=true
+DropCapability=all
+
+Exec=--voice en_US-lessac-medium
+
+HealthStartupCmd=["/usr/src/.venv/bin/python3", "-m", "wyoming_piper.health_check"]
+HealthStartupInterval=5s
+HealthStartupTimeout=5s
+HealthCmd=["/usr/src/.venv/bin/python3", "-m", "wyoming_piper.health_check"]
+HealthInterval=30s
+HealthTimeout=20s
+HealthOnFailure=kill
+Notify=healthy
+
+Memory=512M
+PidsLimit=50
+
+[Service]
+CPUQuota=100%
+Restart=always
+RestartSec=5s
+ExecStartPre=mkdir -p -m 0700 %h/containers/piper
+
+[Install]
+WantedBy=default.target

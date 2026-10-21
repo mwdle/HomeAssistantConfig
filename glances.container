@@ -1,0 +1,39 @@
+[Container]
+Image=docker.io/nicolargo/glances:4.5.7@sha256:28e4038aa2f2d635f4e6e1e3c7667ce4a808326cb918bba99b0041548b6e7425
+ContainerName=glances
+
+PublishPort=127.0.0.1:61208:61208
+
+# Enable webserver mode (which is required to use the Home Assistant integration)
+Environment=GLANCES_OPT="-w --disable-webui"
+Environment=TZ=America/Denver
+
+ReadOnly=true
+ReadOnlyTmpfs=false
+Tmpfs=/tmp:noexec,nosuid
+
+User=1000
+Group=1000
+UserNS=auto
+NoNewPrivileges=true
+DropCapability=all
+
+HealthStartupCmd=wget --no-verbose --tries=1 --spider http://127.0.0.1:61208/api/4/status || exit 1
+HealthStartupInterval=5s
+HealthStartupTimeout=5s
+HealthCmd=wget --no-verbose --tries=1 --spider http://127.0.0.1:61208/api/4/status || exit 1
+HealthInterval=60s
+HealthTimeout=5s
+HealthOnFailure=kill
+Notify=healthy
+
+Memory=256M
+PidsLimit=50
+
+[Service]
+CPUQuota=50%
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
