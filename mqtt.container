@@ -9,6 +9,8 @@ PublishPort=127.0.0.1:9001:9001
 
 Secret=mqtt_password_file,target=mqtt_password,uid=1883,gid=1883,mode=0400
 
+Timezone=local
+
 Volume=./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro,Z
 
 ReadOnly=true

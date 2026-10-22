@@ -6,9 +6,10 @@ Network=glances.network
 
 PublishPort=127.0.0.1:61208:61208
 
+Timezone=local
+
 # Enable webserver mode (which is required to use the Home Assistant integration)
 Environment=GLANCES_OPT="-w --disable-webui"
-Environment=TZ=America/Denver
 
 ReadOnly=true
 ReadOnlyTmpfs=false

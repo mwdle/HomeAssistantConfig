@@ -4,6 +4,8 @@ ContainerName=home-assistant
 
 Network=host
 
+Timezone=local
+
 Volume=%h/containers/home-assistant:/config:U,Z
 
 UserNS=auto
