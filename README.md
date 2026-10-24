@@ -1,6 +1,6 @@
 # Home Assistant Configuration
 
-A rootless Podman Quadlet configuration for [Home Assistant](https://www.home-assistant.io/), [Glances](https://github.com/nicolargo/glances), [Mosquitto MQTT](https://mosquitto.org/), [Wyoming Piper](https://github.com/rhasspy/wyoming-piper), and [Wyoming Faster Whisper](https://github.com/rhasspy/wyoming-faster-whisper).
+A rootless Podman Quadlet configuration for [Home Assistant](https://www.home-assistant.io/), [Mosquitto MQTT](https://mosquitto.org/), [Wyoming Piper](https://github.com/rhasspy/wyoming-piper), and [Wyoming Faster Whisper](https://github.com/rhasspy/wyoming-faster-whisper).
 
 ## License
 
